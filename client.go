@@ -3,12 +3,23 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"bufio"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/JulienOuell/gRPC-API/route"
 )
+
+func getClientMessage() (string) {
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Give the server a message: ")
+	message, _ := reader.ReadString('\n')
+
+	return message
+}
 
 func main() {
 
@@ -21,7 +32,9 @@ func main() {
 
 	c := route.NewRouteServiceClient(conn)
 
-	response, err := c.SayHello(context.Background(), &route.Message{Body: "Hello From Client!"})
+	message := getClientMessage()
+
+	response, err := c.SayHello(context.Background(), &route.Message{Body: message})
 	if err != nil {
 		log.Fatalf("Error when calling SayHello: %s", err)
 	}
