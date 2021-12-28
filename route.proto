@@ -1,0 +1,11 @@
+syntax = "proto3";
+package route;
+option go_package = "./";
+
+message Message {
+  string body = 1;
+}
+
+service RouteService {
+  rpc SayHello(Message) returns (Message) {}
+}
