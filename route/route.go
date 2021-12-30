@@ -9,7 +9,10 @@ import (
 type Server struct {
 }
 
-func (s *Server) SayHello(ctx context.Context, in *Message) (*Message, error) {
-	log.Printf("Receive message body from client: %s", in.Body)
-	return &Message{Body: "Hello From the Server!"}, nil
+func (s *Server) FindBus(ctx context.Context, in *Message) (*Message, error) {
+	log.Printf("Receive message body from client, checking for stop: %s", in.Body)
+	if busA.checkStop(in.Body) {
+		return &Message{Body: busA.name}, nil
+	}
+	return &Message{Body: "Couldn't find a bus for your needs"}, nil
 }

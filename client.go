@@ -12,6 +12,7 @@ import (
 	"github.com/JulienOuell/gRPC-API/route"
 )
 
+//Function to get user input
 func getClientMessage() (string) {
 	reader := bufio.NewReader(os.Stdin)
 
@@ -23,6 +24,7 @@ func getClientMessage() (string) {
 
 func main() {
 
+	//Client connection to port 9000 so we can talk with the server
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(fmt.Sprintf(":%d", 9000), grpc.WithInsecure())
 	if err != nil {
@@ -34,7 +36,8 @@ func main() {
 
 	message := getClientMessage()
 
-	response, err := c.SayHello(context.Background(), &route.Message{Body: message})
+	//Send message to server stub and get response
+	response, err := c.FindBus(context.Background(), &route.Message{Body: message})
 	if err != nil {
 		log.Fatalf("Error when calling SayHello: %s", err)
 	}

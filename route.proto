@@ -7,5 +7,5 @@ message Message {
 }
 
 service RouteService {
-  rpc SayHello(Message) returns (Message) {}
+  rpc FindBus(Message) returns (Message) {}
 }
