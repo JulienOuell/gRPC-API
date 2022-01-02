@@ -77,8 +77,11 @@ var file_route_proto_rawDesc = []byte{
 	0x0a, 0x0b, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x72,
 	0x6f, 0x75, 0x74, 0x65, 0x22, 0x1d, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12,
 	0x12, 0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x62,
-	0x6f, 0x64, 0x79, 0x32, 0x3b, 0x0a, 0x0c, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x12, 0x2b, 0x0a, 0x07, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x75, 0x73, 0x12, 0x0e,
+	0x6f, 0x64, 0x79, 0x32, 0x6b, 0x0a, 0x0c, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x12, 0x2e, 0x0a, 0x08, 0x53, 0x65, 0x74, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12,
+	0x0e, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a,
+	0x0e, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22,
+	0x00, 0x28, 0x01, 0x12, 0x2b, 0x0a, 0x07, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x75, 0x73, 0x12, 0x0e,
 	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x0e,
 	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00,
 	0x42, 0x04, 0x5a, 0x02, 0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
@@ -101,10 +104,12 @@ var file_route_proto_goTypes = []interface{}{
 	(*Message)(nil), // 0: route.Message
 }
 var file_route_proto_depIdxs = []int32{
-	0, // 0: route.RouteService.FindBus:input_type -> route.Message
-	0, // 1: route.RouteService.FindBus:output_type -> route.Message
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: route.RouteService.SetStart:input_type -> route.Message
+	0, // 1: route.RouteService.FindBus:input_type -> route.Message
+	0, // 2: route.RouteService.SetStart:output_type -> route.Message
+	0, // 3: route.RouteService.FindBus:output_type -> route.Message
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -161,6 +166,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type RouteServiceClient interface {
+	SetStart(ctx context.Context, opts ...grpc.CallOption) (RouteService_SetStartClient, error)
 	FindBus(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
 }
 
@@ -170,6 +176,40 @@ type routeServiceClient struct {
 
 func NewRouteServiceClient(cc grpc.ClientConnInterface) RouteServiceClient {
 	return &routeServiceClient{cc}
+}
+
+func (c *routeServiceClient) SetStart(ctx context.Context, opts ...grpc.CallOption) (RouteService_SetStartClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_RouteService_serviceDesc.Streams[0], "/route.RouteService/SetStart", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &routeServiceSetStartClient{stream}
+	return x, nil
+}
+
+type RouteService_SetStartClient interface {
+	Send(*Message) error
+	CloseAndRecv() (*Message, error)
+	grpc.ClientStream
+}
+
+type routeServiceSetStartClient struct {
+	grpc.ClientStream
+}
+
+func (x *routeServiceSetStartClient) Send(m *Message) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *routeServiceSetStartClient) CloseAndRecv() (*Message, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(Message)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func (c *routeServiceClient) FindBus(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
@@ -183,6 +223,7 @@ func (c *routeServiceClient) FindBus(ctx context.Context, in *Message, opts ...g
 
 // RouteServiceServer is the server API for RouteService service.
 type RouteServiceServer interface {
+	SetStart(RouteService_SetStartServer) error
 	FindBus(context.Context, *Message) (*Message, error)
 }
 
@@ -190,12 +231,41 @@ type RouteServiceServer interface {
 type UnimplementedRouteServiceServer struct {
 }
 
+func (*UnimplementedRouteServiceServer) SetStart(RouteService_SetStartServer) error {
+	return status.Errorf(codes.Unimplemented, "method SetStart not implemented")
+}
 func (*UnimplementedRouteServiceServer) FindBus(context.Context, *Message) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindBus not implemented")
 }
 
 func RegisterRouteServiceServer(s *grpc.Server, srv RouteServiceServer) {
 	s.RegisterService(&_RouteService_serviceDesc, srv)
+}
+
+func _RouteService_SetStart_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(RouteServiceServer).SetStart(&routeServiceSetStartServer{stream})
+}
+
+type RouteService_SetStartServer interface {
+	SendAndClose(*Message) error
+	Recv() (*Message, error)
+	grpc.ServerStream
+}
+
+type routeServiceSetStartServer struct {
+	grpc.ServerStream
+}
+
+func (x *routeServiceSetStartServer) SendAndClose(m *Message) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *routeServiceSetStartServer) Recv() (*Message, error) {
+	m := new(Message)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _RouteService_FindBus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -225,6 +295,12 @@ var _RouteService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _RouteService_FindBus_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SetStart",
+			Handler:       _RouteService_SetStart_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "route.proto",
 }

@@ -7,5 +7,7 @@ message Message {
 }
 
 service RouteService {
+  rpc SetStart(stream Message) returns (Message) {}
+
   rpc FindBus(Message) returns (Message) {}
 }

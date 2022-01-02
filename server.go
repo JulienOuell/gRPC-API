@@ -30,6 +30,6 @@ func main() {
 
 	//grpc server now listens on port 9000
 	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %s", err)
+		log.Fatalf("Failed to serve: %s", err)
 	}
 }

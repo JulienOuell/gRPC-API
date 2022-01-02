@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"bufio"
+	"strings"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -13,13 +14,39 @@ import (
 )
 
 //Function to get user input
-func getClientMessage() (string) {
+func getClientMessage(text string) (string) {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Give the server a message: ")
+	fmt.Println(text)
 	message, _ := reader.ReadString('\n')
+	message = strings.TrimSuffix(message, "\n")
 
 	return message
+}
+
+func setStart(c route.RouteServiceClient) {
+	var points []*route.Message
+	var point string
+	for i := 0; i < 2; i++ {
+		point = getClientMessage("Provide starting x/y location (x first): ")
+		message := &route.Message{Body: point}
+		points = append(points, message)
+	}
+
+	stream, err := c.SetStart(context.Background())
+	if err != nil {
+		log.Fatalf("Error when starting stream: %v", err)
+	}
+	for _, point := range points {
+		if err := stream.Send(point); err != nil {
+			log.Fatalf("Error when sending point to server: %v", err)
+		}
+	}
+	reply, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Error when closing stream: %v", err)
+	}
+	log.Printf(reply.Body)
 }
 
 func main() {
@@ -28,13 +55,14 @@ func main() {
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial(fmt.Sprintf(":%d", 9000), grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %s", err)
+		log.Fatalf("Did not connect: %s", err)
 	}
 	defer conn.Close()
 
 	c := route.NewRouteServiceClient(conn)
 
-	message := getClientMessage()
+	setStart(c)
+	message := getClientMessage("Give stop: ")
 
 	//Send message to server stub and get response
 	response, err := c.FindBus(context.Background(), &route.Message{Body: message})
